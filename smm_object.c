@@ -28,54 +28,78 @@ char* smmObj_getTypeName(int type){
 	return (char*)smmNodeName[type];
 }
 
-// 1. 구조체 형식 정의
 
+
+typedef enum smmObjType {
+	smmObjType_board = 0,
+	smmObjType_card,
+	smmObjYype_grade
+}smmObjType_e;
+
+typedef enum smmObjGrade {
+	smmObjGrade_Ap = 0,
+	smmObjGrade_A0,
+	smmObjGrade_Am,
+	smmObjGrade_Bp,
+	smmObjGrade_B0,
+	smmObjGrade_Bm,
+	smmObjGrade_Cp,
+	smmObjGrade_C0,
+	smmObjGrade_Cm	
+}smmObjGrade_e;
+
+// 1. 구조체 형식 정의
 typedef struct smmObject {
 	char name[MAX_CHARNAME];
+	smmObjType_e ObjType;
 	int type;
 	int credit;
 	int energy;
+	smmObjGrade_e grade;
 }smmObject_t;
 
-// 2. 구조체 배열 변수 정의 
-
-static smmObject_t smm_node[MAX_NODE];
-
-
-static int smmObj_noNode = 0;
 
 
 // 3. 관련 함수 변경 
 
 //object generation
-void smmObj_genNode(char* name,int type,int credit,int energy)
+void* smmObj_genObject(char* name,smmObjType_e type,int type,int credit,int energy, smmObjGrade_e grade)
 {
-	strcpy(smm_node[smmObj_noNode].name,name);
-	smm_node[smmObj_noNode].type = type;
-    smm_node[smmObj_noNode].credit = credit;
-    smm_node[smmObj_noNode].energy = energy;
+	smmObj_t* ptr;
+	ptr = (smmObject_t *)malloc(sizeof(smmObject_t));
+	strcpy(ptr->name,name);
+	ptr->ObjType = objType;
+	ptr->type = type;
+	ptr->credit = credit;
+	ptr->energy = energy;
+	ptr->grade = grade;
+
+    return ptr;
     
-    smmObj_noNode++;
-
 }
 
-// 3. 관련 함수 변경(구조체 형태) 
+// 3. 관련 함수 변경
+  
+char* smmObj_getNodeName(void* obj)
+{
+	smmObject_t* ptr = (smmObject_t*)obj; // data encaptualation
+	return ptr->name;
+}
+
  
-// main.c에 함수형태로 name,type,credit,energy를 제공해준다. 
-char* smmObj_getNodeName(int node_nr)
-{
-	return smm_node[node_nr].name;
-}
-int smmObj_getNodeType(int node_nr)
+int smmObj_getNodeType(void* obj)
  {
-	return smm_node[node_nr].type;
+ 	smmObject_t*ptr = (smmObject_t*)obj;
+	return ptr->type;
 }
-int smmObj_getNodeCredit(int node_nr) 
+int smmObj_getNodeCredit(void* obj) 
 {
-	return smm_node[node_nr].credit;
+	smmObject_t*ptr = (smmObject_t*)obj;
+	return ptr->credit;
 }
-int smmObj_getNodeEnergy(int node_nr)
+int smmObj_getNodeEnergy(void* obj)
 {
-	return smm_node[node_nr].energy;
+	smmObject_t*ptr = (smmObject_t*)obj;
+	return ptr->energy;
 }
 
