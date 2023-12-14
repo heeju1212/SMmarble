@@ -128,7 +128,7 @@ int rolldie(int player)
 }
 
 int rollDice() {
-    return (rand() % MAX_DIE) + 1; // 주사위를 굴리는 함수 
+    return rand() % MAX_DIE + 1; // 주사위를 굴리는 함수 
 }
 
 int do_experiment(int escapeThreshold) {
@@ -141,6 +141,10 @@ int do_experiment(int escapeThreshold) {
 			flag_escape = 1;
 			break;
 			}
+		else{
+			flag_escape = 0;
+			break;
+		}
 	}while (flag_escape == 0);
 	
 	
