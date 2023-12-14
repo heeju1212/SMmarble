@@ -133,11 +133,10 @@ int rollDice() {
 
 int do_experiment(int escapeThreshold) {
 	int my_dicenum; // 실험실 노드에서 탈출하기 위해 내가 던진 주사위 숫자에 대한 변수 
-	
 	do{	
 		int my_dicenum = rollDice(); 
 		printf("플레이어가 주사위를 굴려 얻은 값 : %d\n", my_dicenum);
-		printf("%d\n",escapeThreshold);
+		printf("성공기준값:%d\n",escapeThreshold);
 		if (escapeThreshold <= my_dicenum){
 			flag_escape = 1;
 			break;
@@ -215,26 +214,12 @@ void actionNode(int player)
 		// case Gotolab:
 		case SMMNODE_TYPE_GOTOLAB:
 			cur_player[player].position = 8; 
-			int escapeThreshold= rand()%MAX_DIE + 1;
+			escapeThreshold = rollDice();
 			break;
 			
 		// case laboratory:
 		case SMMNODE_TYPE_LABORATORY:
-			
-			do{
-			// 실험이 성공할 때까지 계속 갇혀서 실험을 하는 코드
-			// do-while문을 이용하여 작성하였다.
-			// player의 위치가 실험이 성공할 때까지 계속 실험실로 고정되고, 
-			// flag 변수를 이용하여 실험의 성공여부를 체크하는 코드이다. 
-				cur_player[player].position = 8; 
-				cur_player[player].energy -= smmObj_getNodeEnergy(boardPtr);
-				do_experiment(escapeThreshold);
-				
-			}while (flag_escape == 0);
-			if (flag_escape == 1) {
-				printf("%s는 실험이 성공해서 드디어 실험실을 탈출!\n ",cur_player[player].name);
-			}
-				 
+			cur_player[player].position = 8; 
 			break;
 			
         default:
@@ -246,7 +231,12 @@ void actionNode(int player)
 
 void goForward(int player,int step) {
 	
+	
 	void* boardPtr;
+	boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position);
+	int type = smmObj_getNodeType(boardPtr);
+	int cnt_exp = 0;
+	
 	cur_player[player].position+= step;
 	
 	if (cur_player[player].position > 15) {
@@ -262,6 +252,31 @@ void goForward(int player,int step) {
 				cur_player[player].name, cur_player[player].position,
 				smmObj_getNodeName(boardPtr));
     
+    switch(type) {
+    	case SMMNODE_TYPE_LABORATORY:
+    		do{
+			// 실험이 성공할 때까지 계속 갇혀서 실험을 하는 코드
+			// do-while문을 이용하여 작성하였다.
+			// player의 위치가 실험이 성공할 때까지 계속 실험실로 고정되고, 
+			// flag 변수를 이용하여 실험의 성공여부를 체크하는 코드이다. 
+				cur_player[player].position = 8; 
+				cur_player[player].energy -= smmObj_getNodeEnergy(boardPtr);
+				do_experiment(escapeThreshold);
+				cnt_exp ++;
+			}while (flag_escape == 0);
+			
+			if (flag_escape == 1) {
+				printf("%s는 실험이 성공해서 드디어 실험실을 탈출!\n ",cur_player[player].name);
+				printf("%d회 끝의 성공\n",cnt_exp);
+				cur_player[player].position += step;
+			}
+				 
+			break;
+    	
+    	
+    	default:
+    		break;
+	}
     
 }
 
