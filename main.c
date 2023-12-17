@@ -30,12 +30,12 @@ typedef struct player{
 	int name[MAX_CHARNAME];
 	int accumCredit;
 	int flag_graduate;
+	int flag_escape;
 }player_t;
 
 static player_t *cur_player;
 
-int flag_escape = 0;
-int escapeThreshold; // 실험 노드에서 주사위를 굴려 랜덤으로 정하게 될 실험 성공 기준값 
+// int escapeThreshold; // 실험 노드에서 주사위를 굴려 랜덤으로 정하게 될 실험 성공 기준값 
 
 
 //function prototypes
@@ -131,25 +131,31 @@ int rollDice() {
     return rand() % MAX_DIE + 1; // 주사위를 굴리는 함수 
 }
 
-int do_experiment(int escapeThreshold) {
-	int my_dicenum; // 실험실 노드에서 탈출하기 위해 내가 던진 주사위 숫자에 대한 변수 
-	do{	
+int do_experiment(int player, int escapeThreshold) {
+	int my_dicenum; // 실험실 노드에서 탈출하기 위해 내가 던진 주사위 숫자에 대한 변수
+	// cur_player[player].flag_escape = 1;
+	int cnt = 0;
+	while (cnt == 0){
 		int my_dicenum = rollDice(); 
+		printf("\n");
 		printf("플레이어가 주사위를 굴려 얻은 값 : %d\n", my_dicenum);
 		printf("성공기준값:%d\n",escapeThreshold);
-		if (escapeThreshold <= my_dicenum){
-			flag_escape = 1;
-			break;
-			}
-		else{
-			flag_escape = 0;
-			break;
+		cnt++;
 		}
-	}while (flag_escape == 0);
-	
-	
-	return flag_escape;
+		if (escapeThreshold <= my_dicenum) {
+			printf("플레이어가 실험실을 탈출했습니다.\n");
+			cur_player[player].flag_escape == 0;
+			}
+		else {
+			printf("플레이어가 실험실에서 탈출하는데 실패하였습니다.\n");
+			cur_player[player].flag_escape == 1;
+		
+		}
+
+			
+	return cur_player[player].flag_escape;
 }
+
 
 //action code when a player stays at a node
 void actionNode(int player)
@@ -164,6 +170,10 @@ void actionNode(int player)
 	char* name = smmObj_getNodeName(boardPtr);
 	void *gradePtr;
 	void *foodPtr_rand;
+	int escapeThreshold; 
+	int turn;
+	turn = (turn+1)%player_nr;
+	
 	
 	
     switch(type)
@@ -218,43 +228,24 @@ void actionNode(int player)
 			break;
 		// case Gotolab:
 		case SMMNODE_TYPE_GOTOLAB:
-			cur_player[player].position = 8; 
 			escapeThreshold = rollDice();
+			cur_player[player].position = 8; 
+			cur_player[player].flag_escape == 1;
+			do_experiment(turn,escapeThreshold);
 			break;
 			
 		
 		// case laboratory:
 		
 		case SMMNODE_TYPE_LABORATORY:
-			cur_player[player].position = 8; 
-			break;
-		
-		
-		
-		
-		#if 0
-		case SMMNODE_TYPE_LABORATORY:	
-			
-			do{
-			// 실험이 성공할 때까지 계속 갇혀서 실험을 하는 코드
-			// do-while문을 이용하여 작성하였다.
-			// player의 위치가 실험이 성공할 때까지 계속 실험실로 고정되고, 
-			// flag 변수를 이용하여 실험의 성공여부를 체크하는 코드이다. 
-				cur_player[player].position = 8; 
-				cur_player[player].energy -= smmObj_getNodeEnergy(boardPtr);
-				do_experiment(escapeThreshold);
-				cnt_exp ++;
-				
-			}while (flag_escape == 0);
-			
-			if (flag_escape == 1) {
-				printf("%s는 실험이 성공해서 드디어 실험실을 탈출!\n ",cur_player[player].name);
-				printf("%d회 끝의 성공\n",cnt_exp);
-				
+			if (cur_player[player].flag_escape == 1) {
+				do_experiment(turn,escapeThreshold);
+				break;
 			}
-				 
-			break;
-    	#endif
+			else {	
+				printf("%s는 그냥 실험실을 지나칩니다.\n",cur_player[player].name);
+			}
+	
 			
         default:
             break;
@@ -287,36 +278,7 @@ void goForward(int player,int step) {
 	printf("%s go to node %i (name : %s)\n",
 				cur_player[player].name, cur_player[player].position,
 				smmObj_getNodeName(boardPtr));
-    
-    
-    
-    switch(type) {
-    	case SMMNODE_TYPE_LABORATORY:
-    		do{
-			// 실험이 성공할 때까지 계속 갇혀서 실험을 하는 코드
-			// do-while문을 이용하여 작성하였다.
-			// player의 위치가 실험이 성공할 때까지 계속 실험실로 고정되고, 
-			// flag 변수를 이용하여 실험의 성공여부를 체크하는 코드이다. 
-				cur_player[player].position = 8; 
-				cur_player[player].energy -= smmObj_getNodeEnergy(boardPtr);
-				do_experiment(escapeThreshold);
-				cnt_exp ++;
-				turn = turn = (turn+1)%player_nr;
-				turn ++;
-			}while (flag_escape == 0);
-			
-			if (flag_escape == 1) {
-				printf("%s는 실험이 성공해서 드디어 실험실을 탈출!\n ",cur_player[player].name);
-				printf("%d회 끝의 성공\n",cnt_exp);
-				cur_player[player].position += step;
-			}
-				 
-			break;
-    	
-    	
-    	default:
-    		break;
-	}
+	
     
 }
 
