@@ -130,6 +130,8 @@ int rolldie(int player)
 int rollDice() {
     return rand() % MAX_DIE + 1; // 주사위를 굴리는 함수 
 }
+ 
+
 
 int do_experiment(int player, int escapeThreshold) {
 	int my_dicenum; // 실험실 노드에서 탈출하기 위해 내가 던진 주사위 숫자에 대한 변수
@@ -139,12 +141,12 @@ int do_experiment(int player, int escapeThreshold) {
 	printf("성공기준값:%d\n",escapeThreshold);
 		
 	if (escapeThreshold <= my_dicenum) {
-		printf("%s가 실험실을 탈출했습니다.\n",cur_player[player].name);
+		printf("플레이어가 실험실을 탈출했습니다.\n");
 		cur_player[player].flag_escape == 0;
 			}
 	if (escapeThreshold > my_dicenum) {
 		
-		printf("%s가 실험실에서 탈출하는데 실패하였습니다.\n",cur_player[player].name);
+		printf("플레이어가 실험실에서 탈출하는데 실패하였습니다.\n");
 		cur_player[player].flag_escape == 1;
 		
 		}
@@ -424,6 +426,24 @@ int main(int argc, const char * argv[]) {
 
 		//4-4. take action at the destination node of the board
         actionNode(turn);
+        #if 0
+        int cnt = 0;
+		while (cnt == 0){
+			int my_dicenum; 
+			my_dicenum = rollDice(); 
+			printf("\n");
+			printf("플레이어가 주사위를 굴려 얻은 값 : %d\n", my_dicenum);
+			printf("성공기준값:%d\n",escapeThreshold);
+			cnt++;
+		}
+		if (escapeThreshold <= my_dicenum) {
+			printf("플레이어가 실험실을 탈출했습니다.\n");
+			cur_player[player].flag_escape == 0;
+		else {
+			printf("플레이어가 실험실에서 탈출하는 데 실패하였습니다.\n");
+			cur_player[player].flag_escape = 1;
+		}
+		#endif
         
         //4-5. next turn
         turn = (turn+1)%player_nr;
