@@ -136,18 +136,19 @@ int do_experiment(int player, int escapeThreshold) {
 	// cur_player[player].flag_escape = 1;
 	int cnt = 0;
 	while (cnt == 0){
-		int my_dicenum = rollDice(); 
+		my_dicenum = rollDice(); 
 		printf("\n");
 		printf("플레이어가 주사위를 굴려 얻은 값 : %d\n", my_dicenum);
 		printf("성공기준값:%d\n",escapeThreshold);
 		cnt++;
 		}
 		if (escapeThreshold <= my_dicenum) {
-			printf("플레이어가 실험실을 탈출했습니다.\n");
+			printf("%s가 실험실을 탈출했습니다.\n",cur_player[player].name);
 			cur_player[player].flag_escape == 0;
 			}
-		else {
-			printf("플레이어가 실험실에서 탈출하는데 실패하였습니다.\n");
+		if (escapeThreshold > my_dicenum) {
+		
+			printf("%s가 실험실에서 탈출하는데 실패하였습니다.\n",cur_player[player].name);
 			cur_player[player].flag_escape == 1;
 		
 		}
@@ -240,6 +241,7 @@ void actionNode(int player)
 		case SMMNODE_TYPE_LABORATORY:
 			if (cur_player[player].flag_escape == 1) {
 				do_experiment(turn,escapeThreshold);
+				cur_player[player].energy -= smmObj_getNodeEnergy(boardPtr);
 				break;
 			}
 			else {	
