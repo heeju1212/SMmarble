@@ -240,11 +240,11 @@ void actionNode(int player)
             gradePtr = smmObj_genObject(name, smmObjType_grade, 0, smmObj_getNodeCredit( boardPtr ), 0, rand()%smmObjGrade_COUNT);
             smmdb_addTail(LISTNO_OFFSET_GRADE + player, gradePtr);
             
-        	}
+        	
         	
 			break;
 			
-			
+		}
 			
 			
 		// case home:
@@ -254,10 +254,10 @@ void actionNode(int player)
 			cur_player[player].energy += smmObj_getNodeEnergy(boardPtr);
 			printf("%s가 집에 도착하여 에너지를 보충합니다.\n");
 			printf("\n");
-			}
+			
 			
 			break; 
-			
+	}
 			
 			
 		// case foodchance:
@@ -269,9 +269,9 @@ void actionNode(int player)
 			cur_player[player].energy += smmObj_getNodeEnergy(foodPtr_rand);
 			printf("%s는 food chance로 %s를 먹었습니다.\n",cur_player[player].name, smmObj_getNodeName(foodPtr_rand));
 			printf("\n");
-			}
-			break;
 			
+			break;
+		}
 	
 		// case restaurant:
 		case SMMNODE_TYPE_RESTAURANT:
@@ -281,9 +281,8 @@ void actionNode(int player)
 			cur_player[player].energy += smmObj_getNodeEnergy(boardPtr);
 			printf("%s는 식당에서 에너지를 보충하였습니다.\n",cur_player[player].name);
 			printf("\n");
-			}
 			break;
-			
+			}
 			
 			
 		// case Gotolab:
@@ -330,11 +329,6 @@ void goForward(int player,int step) {
 	boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position);
 	int type = smmObj_getNodeType(boardPtr);
 	
-	//int cnt_exp = 0;
-	//int turn = 0;
-
-
-	
 	
 	
 	cur_player[player].position+= step;
@@ -347,7 +341,7 @@ void goForward(int player,int step) {
 	boardPtr = smmdb_getData(LISTNO_NODE, cur_player[player].position );
 	
 	
-		
+	printf("\n");
 	printf("%s go to node %i (name : %s)\n",
 				cur_player[player].name, cur_player[player].position,
 				smmObj_getNodeName(boardPtr));
