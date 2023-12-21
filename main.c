@@ -69,9 +69,11 @@ void printGrades(int player)
      for (i=0;i<smmdb_len(LISTNO_OFFSET_GRADE + player);i++)
      {
          gradePtr = smmdb_getData(LISTNO_OFFSET_GRADE + player, i);
-         //printf("%s : %i\n", smmObj_getNodeName(gradePtr), smmObj_getNodeGrade(gradePtr)); // enum 요소인 성적의 index가 출력됨 
+         //printf("%s : %i\n", smmObj_getNodeName(gradePtr), smmObj_getNodeGrade(gradePtr)); // -> 이 코드는  enum 요소인 성적의 index가 출력됨 
          
-         printf("%s : %s\n", smmObj_getNodeName(gradePtr), gradenames[smmObj_getNodeGrade(gradePtr)]);	 // 사용자에게 알파벳 성적이 출력되어 보이도록 함. 
+         printf("\n");
+         printf("lecture name %s : %d credit, %s grade\n", smmObj_getNodeName(gradePtr),smmObj_getNodeCredit(gradePtr),
+		  gradenames[smmObj_getNodeGrade(gradePtr)]);	 // 사용자에게 과목명과, 학점과,  알파벳 성적이 출력되어 보이도록 함. 
      }
 }
 
@@ -116,6 +118,8 @@ int rolldie(int player)
 	
 	
     char c;
+    printf("\n");
+    printf("\n");
     printf(" Press any key to roll a die (press g to see grade): ");
     c = getchar();
     fflush(stdin);
@@ -396,6 +400,8 @@ int main(int argc, const char * argv[]) {
     
     srand(time(NULL));
     
+    void *gradePtr;
+    
     
     //1. import parameters ---------------------------------------------------------------------------------
     //1-1. boardConfig 
@@ -534,13 +540,23 @@ int main(int argc, const char * argv[]) {
         actionNode(turn);
         
         if (isGraduated(turn) == 1) {
+        	// 졸업한 플레이어의 마지막 상태인 위치,누적학점,에너지,위치를 반복문 종료 조건이 충족되면  출력하도록 하였다. 
+        	printf("%s : credit %i,energy %i,position %i\n",
+				cur_player[turn].name,
+				cur_player[turn].accumCredit,
+				cur_player[turn].energy,
+				cur_player[turn].position);
+			printf("\n"); 
+        	printGrades(turn); 
         	break;
 		}
         
         //4-5. next turn
         turn = (turn+1)%player_nr;
     }
-    printf("졸업한 플레이어가 수강한 강의의 이름,학점,성적을 각각 출력\n");
+    
+    
+    
     
     free(cur_player);
     printf("GAME END\n");
