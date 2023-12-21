@@ -65,7 +65,7 @@ void printGrades(int player)
 			// smmObjGrade_COUNT 라는요소를 enum smmObjGrade_e 안의 마지막요소로 추가하여, AP,A0,AM,BP,B0,BM,CP,C0,CM라는
 			// 성적종류 9개를 random하게 뽑을 수 있도록 하였음.
 			// 그렇게 랜덤하게 뽑힌 점수는 gradePtr에 저장됨. 
-			
+	 printf("\n(주사위를 던진 플레이어가 들은 과목과 성적)\n");		
      for (i=0;i<smmdb_len(LISTNO_OFFSET_GRADE + player);i++)
      {
          gradePtr = smmdb_getData(LISTNO_OFFSET_GRADE + player, i);
@@ -81,6 +81,14 @@ void printGrades(int player)
 		  gradenames[smmObj_getNodeGrade(gradePtr)]);	
      }
 }
+
+// 플레이어와 과목명을 매개변수로 하여, 그 과목의 점수의 enum 인덱스를 찾아내는 함수이다. 
+int findGrade(int player, char *lectureName) {
+	return smmObj_getNodeGrade(lectureName);
+
+}
+
+
 
 
 void printPlayerStatus(void){
@@ -255,15 +263,30 @@ void actionNode(int player)
 				 				cur_player[player].name);
 				}
 			
+				// 이전에 수강한 이력이 있는 강의는 듣지 못하도록 하기 위한 코드이다.
+				// 결과적으로 이 부분의 코드를 통해서는 조건이 잘 적용되지는 못하였다.
+				// 조건이  실행 결과에 전혀 영향을 끼치지 못하는 모습을 보였다. 
+			 
+			 
+				// 다만, 나의 생각은  findGrade()함수를 통해 이미 수강한 이력이 있는 강의의 점수를 끄집어내와서
+				// 그 결과가 빈 문자열(널문자)이면 강의를 아직 한 번도 듣지 않은 것으로 판단하여
+				// 정상작동(강의를 듣고 학점을 얻도록 함) 하도록 만들고,
+				// 그 결과가 빈 문자열이 아니라면, 강의를 들은 이력이 있는 것으로 판단하여
+				// 강의를 다시 듣지 못하도록 막을 수 있다면 문제의 조건을 충족할 수 있지 않을까라는 생각이었다. 
 			
-			#if 0 
-			if ( "이전에 수강한 이력이 있는 강의라면") {
-				 printf("이전에 수강한 이력이 있으므로 수강할 수 없습니다.");
-			}
-			#endif
+				if (findGrade(player, smmObj_getNodeName(boardPtr)) != '\0') {
+					 printf("이전에 수강한 이력이 있으므로 수강할 수 없습니다.\n");
+				}
 			
-			if (cur_player[player].energy >= smmObj_getNodeEnergy(boardPtr)) { 
-			// 이전에 듣지 않은 강의라는 조건 추가 
+			
+			
+			// 현재 에너지가 소요에너지 이상 있고 이전에 듣지 않은 강의이면 수강 가능하다라는 조건을 
+			// 구현하기 위한 코드이다. 첫번째 조건은 잘 적용되었고, 
+			// 앞서 언급한 바와 같이 두번째 조건은 실행 결과에 전혀 영향을 끼치지 못하는 모습을 보였다. 
+			 
+			if (cur_player[player].energy >= smmObj_getNodeEnergy(boardPtr) && 
+					( findGrade(player, smmObj_getNodeName(boardPtr)) == '\0')) { 
+			
 			
 			// 1. 수강 드랍 선택 
 				int choice;
@@ -285,7 +308,7 @@ void actionNode(int player)
         			cur_player[player].accumCredit += smmObj_getNodeCredit(boardPtr);
         			cur_player[player].energy -= smmObj_getNodeEnergy(boardPtr);
         			}
-        	}
+        	
         	
        		
 			
@@ -297,11 +320,12 @@ void actionNode(int player)
 			// 성적종류 9개를 random하게 뽑을 수 있도록 하였음.
 			// 그렇게 랜덤하게 뽑힌 점수는 gradePtr에 저장됨. 
 			
-            gradePtr = smmObj_genObject(name, smmObjType_grade, 0, 
-				smmObj_getNodeCredit( boardPtr ), 0, rand()%smmObjGrade_COUNT);
-            smmdb_addTail(LISTNO_OFFSET_GRADE + player, gradePtr);
-            
-
+				
+            	gradePtr = smmObj_genObject(name, smmObjType_grade, 0, 
+					smmObj_getNodeCredit( boardPtr ), 0, rand()%smmObjGrade_COUNT);
+            	smmdb_addTail(LISTNO_OFFSET_GRADE + player, gradePtr);
+       		
+			}
         	
 			break;
 			
@@ -668,7 +692,8 @@ int main(int argc, const char * argv[]) {
 				cur_player[turn].energy,
 				cur_player[turn].position);
 			printf("\n"); 
-			// 졸업한 플레이어가 지금까지 들은 과목들의 이름,학점,성적을 모두 출력하는 코드이다. 
+			// 졸업한 플레이어가 지금까지 들은 과목들의 이름,학점,성적을 모두 출력하는 코드이다.
+			printf("졸업한 플레이어가 지금까지 들은 과목들 : \n");
         	printGrades(turn); 
         	// 졸업 요건 만족 후 반복문 종료 
         	break;
