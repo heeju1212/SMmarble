@@ -371,7 +371,7 @@ void goForward(int player,int step) {
 // 보드게임을 진행하도록 하는 main 함수 내의 코드에 활용 
 int isGraduated(int player) {
 	if ((cur_player[player].accumCredit >= GRADUATE_CREDIT) &&
-			cur_player[player].position == 0) {
+			cur_player[player].position >= 0) {
 		cur_player[player].flag_graduate = 1;
 	}
 	return cur_player[player].flag_graduate;
