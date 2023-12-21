@@ -47,7 +47,9 @@
 typedef enum smmObjType {
 	smmObjType_board = 0,
 	smmObjType_foodcard,
-	smmObjType_grade
+	smmObjType_grade,
+	smmObjType_festcard,
+	smmObjType_Coursehistory
 }smmObjType_e;
 
 typedef enum smmObjGrade {
@@ -74,6 +76,9 @@ char* smmObj_getNodeName(void* obj);
 int smmObj_getNodeType(void* obj);
 int smmObj_getNodeCredit(void* obj);
 int smmObj_getNodeEnergy(void* obj);
+smmObj_getNodeGrade(void* obj);
+
+
 
 
 
