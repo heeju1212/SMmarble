@@ -547,6 +547,7 @@ int main(int argc, const char * argv[]) {
 				cur_player[turn].energy,
 				cur_player[turn].position);
 			printf("\n"); 
+			// 졸업한 플레이어가 지금까지 들은 과목들의 이름,학점,성적을 모두 출력하는 코드이다. 
         	printGrades(turn); 
         	break;
 		}
